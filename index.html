@@ -76,7 +76,8 @@
     #wave svg { animation: none; }
   }
   header { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
-  h1 { font-size: 20px; font-weight: 600; }
+  h1 { font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+  .logo { width: 26px; height: 26px; flex-shrink: 0; }
   h1 .accent { color: var(--primary); }
   .card {
     background: var(--card);
@@ -214,7 +215,25 @@
 </div>
 <div class="wrap">
   <header>
-    <h1>Fresh <span class="accent">Jobs</span> Link</h1>
+    <h1>
+      <svg class="logo" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="48" fill="oklch(0.68 0.17 55)"/>
+        <circle cx="50" cy="50" r="41" fill="oklch(0.96 0.02 80)"/>
+        <circle cx="50" cy="50" r="36" fill="oklch(0.8 0.19 60)"/>
+        <g stroke="oklch(0.96 0.02 80)" stroke-width="4" stroke-linecap="round">
+          <line x1="50" y1="50" x2="50" y2="16"/>
+          <line x1="50" y1="50" x2="74" y2="26"/>
+          <line x1="50" y1="50" x2="84" y2="50"/>
+          <line x1="50" y1="50" x2="74" y2="74"/>
+          <line x1="50" y1="50" x2="50" y2="84"/>
+          <line x1="50" y1="50" x2="26" y2="74"/>
+          <line x1="50" y1="50" x2="16" y2="50"/>
+          <line x1="50" y1="50" x2="26" y2="26"/>
+        </g>
+        <circle cx="50" cy="50" r="4" fill="oklch(0.96 0.02 80)"/>
+      </svg>
+      <span>Fresh <span class="accent">Jobs</span> Link</span>
+    </h1>
     <div class="header-actions">
       <button class="btn-ghost" id="helpToggle" aria-label="How this works">?</button>
       <button class="btn-ghost" id="themeToggle" aria-label="Toggle theme">◐</button>
