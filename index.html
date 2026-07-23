@@ -132,6 +132,10 @@
     border: 1px solid var(--border);
     background: var(--background);
     color: var(--foreground);
+    transition: border-color 0.25s ease;
+  }
+  input[type="text"]:hover, input[type="number"]:hover {
+    border-color: oklch(0.74 0.17 60 / 50%);
   }
   input:focus-visible, button:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
