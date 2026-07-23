@@ -79,6 +79,8 @@
   h1 { font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
   .logo { width: 26px; height: 26px; flex-shrink: 0; }
   h1 .accent { color: var(--primary); }
+  :root { --card-glass: oklch(1 0 0 / 72%); }
+  .dark { --card-glass: oklch(0.19 0.014 130 / 78%); }
   .card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -87,6 +89,13 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+  @supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
+    .card {
+      background: var(--card-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
   }
   label { font-size: 13px; font-weight: 500; color: var(--muted-foreground); display: block; margin-bottom: 6px; }
   input[type="text"], input[type="number"] {
