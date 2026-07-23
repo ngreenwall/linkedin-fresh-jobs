@@ -74,7 +74,7 @@
   @media (prefers-reduced-motion: reduce) {
     #wave { transition: none; }
     #wave svg { animation: none; }
-    .logo .drip { animation: none; }
+    .logo .drip { animation: none !important; }
   }
   header { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
   h1 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; display: flex; align-items: center; gap: 10px; position: relative; z-index: 2; }
@@ -83,15 +83,15 @@
     opacity: 0;
     transform-box: fill-box;
     transform-origin: center;
-    animation: drip 7s linear infinite;
   }
+  .logo .drip.dripping { animation: drip 2.4s linear; }
   @keyframes drip {
     /* slow swell while attached, then a fast free-fall once it detaches */
-    0%, 50% { transform: translateY(0) scale(0); opacity: 0; }
-    58% { transform: translateY(1px) scale(0.5); opacity: 1; }
-    72% { transform: translateY(4px) scale(1); opacity: 1; }
-    75.5% { transform: translateY(105px) scale(1); opacity: 1; }
-    77%, 100% { transform: translateY(115px) scale(0.9); opacity: 0; }
+    0% { transform: translateY(0) scale(0); opacity: 0; }
+    18% { transform: translateY(1px) scale(0.5); opacity: 1; }
+    60% { transform: translateY(4px) scale(1); opacity: 1; }
+    70% { transform: translateY(105px) scale(1); opacity: 1; }
+    75%, 100% { transform: translateY(115px) scale(0.9); opacity: 0; }
   }
   h1 .accent { color: var(--primary); }
   :root {
@@ -412,6 +412,19 @@
   if (!localStorage.getItem('helpSeen')) {
     openHelp();
     localStorage.setItem('helpSeen', '1');
+  }
+
+  // ---- logo drip: random 2-10s pause between drops ----
+  var drip = document.querySelector('.logo .drip');
+  if (drip && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var scheduleDrip = function () {
+      setTimeout(function () { drip.classList.add('dripping'); }, 2000 + Math.random() * 8000);
+    };
+    drip.addEventListener('animationend', function () {
+      drip.classList.remove('dripping');
+      scheduleDrip();
+    });
+    scheduleDrip();
   }
 
   // ---- theme ----
