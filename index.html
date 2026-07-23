@@ -59,17 +59,17 @@
     left: 0;
     width: 200%;
     height: 100%;
-    fill: var(--primary);
+    fill: var(--wave-color);
     opacity: calc(var(--wave-alpha) * var(--wave-boost, 1));
     animation: drift 18s linear infinite;
   }
   #wave svg + svg {
-    opacity: calc(var(--wave-alpha) * 0.8 * var(--wave-boost, 1));
+    opacity: calc(var(--wave-alpha) * 0.7 * var(--wave-boost, 1));
     animation-duration: 27s;
     animation-direction: reverse;
   }
-  :root { --wave-alpha: 0.035; }
-  .dark { --wave-alpha: 0.05; }
+  :root { --wave-color: oklch(0.75 0.17 60); --wave-alpha: 0.22; }
+  .dark { --wave-color: oklch(0.76 0.19 55); --wave-alpha: 0.2; }
   @keyframes drift { to { transform: translateX(-50%); } }
   @media (prefers-reduced-motion: reduce) {
     #wave { transition: none; }
