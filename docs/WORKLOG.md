@@ -4,13 +4,12 @@
 - [x] Build the single-file HTML tool per `fresh-jobs-link-generator-spec.md`
 - [x] Apply styling from `BRANDING.md` (dark chartreuse theme, Geist font)
 - [x] Init GitHub repo
-- [ ] Connect repo to Vercel for auto-deploy (Nate: import repo in Vercel dashboard)
-- [ ] Test live URL on phone, Add to Home Screen
+- [x] Connect repo to Vercel for auto-deploy (live at linkedin-fresh-jobs.vercel.app)
+- [x] Test live URL on phone, Add to Home Screen
+- [x] v1.1: workplace filter (f_WT), Open all saved searches, share-chips link
 
 ### Ideas
-- localStorage for last-used keyword/location/window
-- Enter key shortcut to generate + open
-- manifest.json for "Add to Home Screen" on mobile
+(all shipped)
 
 ## Session notes
 <!-- Newest entry at top. Format: YYYY-MM-DD | Shipped: ... | Next: ... | Blockers: ... -->

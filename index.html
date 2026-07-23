@@ -171,11 +171,23 @@
       <label for="customMinutes">Minutes</label>
       <input type="number" id="customMinutes" inputmode="numeric" min="1" value="30">
     </div>
+    <div>
+      <label>Workplace (any if none selected)</label>
+      <div class="chips" id="wtChips" role="group" aria-label="Workplace type">
+        <button class="chip" data-wt="1" aria-pressed="false">On-site</button>
+        <button class="chip" data-wt="2" aria-pressed="false">Remote</button>
+        <button class="chip" data-wt="3" aria-pressed="false">Hybrid</button>
+      </div>
+    </div>
   </div>
 
   <div class="card saved-row" id="savedRow">
     <label>Saved searches</label>
     <div class="chips" id="savedChips"></div>
+    <div class="actions">
+      <button class="btn btn-secondary" id="openAllBtn">Open all</button>
+      <button class="btn btn-secondary" id="shareBtn">Share chips</button>
+    </div>
   </div>
 
   <div class="card" id="outputCard">
@@ -197,6 +209,7 @@
   var urlOut = $('urlOut'), summary = $('summary'), outputCard = $('outputCard');
   var openBtn = $('openBtn'), copyBtn = $('copyBtn'), saveBtn = $('saveBtn');
   var savedRow = $('savedRow'), savedChips = $('savedChips');
+  var wtChips = $('wtChips'), openAllBtn = $('openAllBtn'), shareBtn = $('shareBtn');
 
   // ---- theme ----
   var savedTheme = localStorage.getItem('theme') || 'dark';
@@ -225,12 +238,36 @@
     return 'past ' + active.textContent.trim();
   }
 
-  function buildUrl() {
-    var url = 'https://www.linkedin.com/jobs/search/?keywords=' + encodeURIComponent(keywords.value.trim());
-    var loc = location_.value.trim();
-    if (loc) url += '&location=' + encodeURIComponent(loc);
-    url += '&f_TPR=r' + selectedSeconds() + '&sortBy=DD';
+  function selectedWT() {
+    return Array.prototype.map.call(
+      wtChips.querySelectorAll('[aria-pressed="true"]'),
+      function (c) { return c.dataset.wt; }
+    );
+  }
+
+  function entrySeconds(s) {
+    if (s.window === 'custom') {
+      var mins = parseInt(s.customMinutes, 10);
+      return (mins > 0 ? mins : 30) * 60;
+    }
+    return parseInt(s.window, 10);
+  }
+
+  function buildUrlFrom(s) {
+    var url = 'https://www.linkedin.com/jobs/search/?keywords=' + encodeURIComponent(s.keywords);
+    if (s.location) url += '&location=' + encodeURIComponent(s.location);
+    url += '&f_TPR=r' + s.seconds + '&sortBy=DD';
+    if (s.wt && s.wt.length) url += '&f_WT=' + s.wt.join('%2C');
     return url;
+  }
+
+  function buildUrl() {
+    return buildUrlFrom({
+      keywords: keywords.value.trim(),
+      location: location_.value.trim(),
+      seconds: selectedSeconds(),
+      wt: selectedWT()
+    });
   }
 
   function update() {
@@ -241,6 +278,9 @@
     if (kw) parts.push(kw);
     if (loc) parts.push(loc);
     parts.push(windowLabel());
+    var wtNames = { '1': 'on-site', '2': 'remote', '3': 'hybrid' };
+    var wt = selectedWT();
+    if (wt.length) parts.push(wt.map(function (w) { return wtNames[w]; }).join('/'));
     parts.push('newest first');
     summary.textContent = empty ? 'Enter keywords or a location to start' : parts.join(' · ');
     outputCard.classList.toggle('disabled-out', empty);
@@ -250,7 +290,8 @@
     localStorage.setItem('last', JSON.stringify({
       keywords: kw, location: loc,
       window: windowChips.querySelector('[aria-pressed="true"]').dataset.seconds,
-      customMinutes: customMinutes.value
+      customMinutes: customMinutes.value,
+      wt: selectedWT()
     }));
   }
 
@@ -261,6 +302,14 @@
     windowChips.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
     chip.setAttribute('aria-pressed', 'true');
     customWrap.classList.toggle('visible', chip.dataset.seconds === 'custom');
+    update();
+  });
+
+  // ---- workplace chips (multi-select toggle) ----
+  wtChips.addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip');
+    if (!chip) return;
+    chip.setAttribute('aria-pressed', chip.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
     update();
   });
 
@@ -326,6 +375,7 @@
     keywords.value = s.keywords;
     location_.value = s.location;
     setWindow(s.window, s.customMinutes);
+    setWT(s.wt || []);
     update();
   }
   saveBtn.addEventListener('click', function () {
@@ -334,10 +384,12 @@
       keywords: keywords.value.trim(),
       location: location_.value.trim(),
       window: windowChips.querySelector('[aria-pressed="true"]').dataset.seconds,
-      customMinutes: customMinutes.value
+      customMinutes: customMinutes.value,
+      wt: selectedWT()
     };
     var dup = list.some(function (s) {
-      return s.keywords === entry.keywords && s.location === entry.location && s.window === entry.window;
+      return s.keywords === entry.keywords && s.location === entry.location &&
+        s.window === entry.window && (s.wt || []).join() === entry.wt.join();
     });
     if (!dup) { list.push(entry); setSaved(list); }
     saveBtn.textContent = dup ? 'Already saved' : 'Saved';
@@ -353,6 +405,52 @@
     if (isCustom && mins) customMinutes.value = mins;
   }
 
+  function setWT(list) {
+    wtChips.querySelectorAll('.chip').forEach(function (c) {
+      c.setAttribute('aria-pressed', list.indexOf(c.dataset.wt) !== -1 ? 'true' : 'false');
+    });
+  }
+
+  // ---- open all saved searches ----
+  openAllBtn.addEventListener('click', function () {
+    getSaved().forEach(function (s) {
+      window.open(buildUrlFrom({
+        keywords: s.keywords, location: s.location,
+        seconds: entrySeconds(s), wt: s.wt
+      }), '_blank');
+    });
+  });
+
+  // ---- share chips via link ----
+  shareBtn.addEventListener('click', function () {
+    var link = location.origin + location.pathname + '#import=' + encodeURIComponent(JSON.stringify(getSaved()));
+    function done() {
+      shareBtn.textContent = 'Link copied';
+      setTimeout(function () { shareBtn.textContent = 'Share chips'; }, 1500);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(done);
+    } else { done(); }
+  });
+
+  // ---- import chips from a share link ----
+  var importMatch = location.hash.match(/^#import=(.+)/);
+  if (importMatch) {
+    try {
+      var incoming = JSON.parse(decodeURIComponent(importMatch[1]));
+      var current = getSaved();
+      incoming.forEach(function (s) {
+        var dup = current.some(function (x) {
+          return x.keywords === s.keywords && x.location === s.location &&
+            x.window === s.window && (x.wt || []).join() === (s.wt || []).join();
+        });
+        if (!dup) current.push(s);
+      });
+      setSaved(current);
+    } catch (e) { /* malformed link, ignore */ }
+    history.replaceState(null, '', location.pathname);
+  }
+
   // ---- restore last-used ----
   try {
     var last = JSON.parse(localStorage.getItem('last'));
@@ -360,6 +458,7 @@
       keywords.value = last.keywords || '';
       location_.value = last.location || '';
       if (last.window) setWindow(last.window, last.customMinutes);
+      setWT(last.wt || []);
     }
   } catch (e) { /* fresh start */ }
 
