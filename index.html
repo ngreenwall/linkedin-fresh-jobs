@@ -40,7 +40,41 @@
     min-height: 100vh;
     padding: 16px;
   }
-  .wrap { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  .wrap { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; position: relative; z-index: 1; }
+  #wave {
+    position: fixed;
+    left: -10%;
+    bottom: 0;
+    width: 120%;
+    height: var(--wave-height, 32vh);
+    transform: rotate(var(--wave-tilt, 0deg));
+    transform-origin: 50% 100%;
+    transition: height 0.8s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+  #wave svg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    fill: var(--primary);
+    opacity: calc(var(--wave-alpha) * var(--wave-boost, 1));
+    animation: drift 18s linear infinite;
+  }
+  #wave svg + svg {
+    opacity: calc(var(--wave-alpha) * 0.8 * var(--wave-boost, 1));
+    animation-duration: 27s;
+    animation-direction: reverse;
+  }
+  :root { --wave-alpha: 0.035; }
+  .dark { --wave-alpha: 0.05; }
+  @keyframes drift { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) {
+    #wave { transition: none; }
+    #wave svg { animation: none; }
+  }
   header { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
   h1 { font-size: 20px; font-weight: 600; }
   h1 .accent { color: var(--primary); }
@@ -174,6 +208,10 @@
 </style>
 </head>
 <body>
+<div id="wave" aria-hidden="true">
+  <svg viewBox="0 0 1200 100" preserveAspectRatio="none"><path d="M0,50 C150,20 450,80 600,50 C750,20 1050,80 1200,50 L1200,100 L0,100 Z"/></svg>
+  <svg viewBox="0 0 1200 100" preserveAspectRatio="none"><path d="M0,60 C200,85 400,30 600,60 C800,85 1000,30 1200,60 L1200,100 L0,100 Z"/></svg>
+</div>
 <div class="wrap">
   <header>
     <h1>Fresh <span class="accent">Jobs</span> Link</h1>
@@ -259,13 +297,49 @@
   var openBtn = $('openBtn'), copyBtn = $('copyBtn'), saveBtn = $('saveBtn');
   var savedRow = $('savedRow'), savedChips = $('savedChips');
   var wtChips = $('wtChips'), openAllBtn = $('openAllBtn'), shareBtn = $('shareBtn');
+  var wave = $('wave');
+
+  // ---- wave: level tracks freshness window (log scale, 15 min = full, 24 h = low) ----
+  function setWaveLevel(seconds) {
+    var t = (Math.log(seconds) - Math.log(900)) / (Math.log(86400) - Math.log(900));
+    t = Math.min(1, Math.max(0, t));
+    wave.style.setProperty('--wave-height', (45 - t * 27).toFixed(1) + 'vh');
+    wave.style.setProperty('--wave-boost', (1.5 - t * 0.5).toFixed(2));
+  }
+
+  // ---- wave: self-leveling tilt from device orientation ----
+  var tiltTarget = 0, tiltCurrent = 0, tiltActive = false;
+  function tiltLoop() {
+    tiltCurrent += (tiltTarget - tiltCurrent) * 0.08;
+    wave.style.setProperty('--wave-tilt', tiltCurrent.toFixed(2) + 'deg');
+    requestAnimationFrame(tiltLoop);
+  }
+  function onTilt(e) {
+    if (e.gamma == null) return;
+    tiltTarget = Math.max(-6, Math.min(6, -e.gamma / 5));
+    if (!tiltActive) { tiltActive = true; tiltLoop(); }
+  }
+  function startTilt() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    window.addEventListener('deviceorientation', onTilt);
+  }
+  var needsMotionPermission = typeof DeviceOrientationEvent !== 'undefined' &&
+    typeof DeviceOrientationEvent.requestPermission === 'function';
+  if (!needsMotionPermission) startTilt();
 
   // ---- help modal ----
   var helpBackdrop = $('helpBackdrop');
   function openHelp() { helpBackdrop.classList.add('visible'); }
   function closeHelp() { helpBackdrop.classList.remove('visible'); }
   $('helpToggle').addEventListener('click', openHelp);
-  $('helpClose').addEventListener('click', closeHelp);
+  $('helpClose').addEventListener('click', function () {
+    closeHelp();
+    if (needsMotionPermission) {
+      DeviceOrientationEvent.requestPermission().then(function (res) {
+        if (res === 'granted') startTilt();
+      }).catch(function () { /* declined or unavailable, drift-only wave */ });
+    }
+  });
   helpBackdrop.addEventListener('click', function (e) { if (e.target === helpBackdrop) closeHelp(); });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && helpBackdrop.classList.contains('visible')) closeHelp();
@@ -348,6 +422,7 @@
     parts.push('newest first');
     summary.textContent = empty ? 'Enter keywords or a location to start' : parts.join(' · ');
     outputCard.classList.toggle('disabled-out', empty);
+    setWaveLevel(selectedSeconds());
     openBtn.disabled = empty;
     copyBtn.disabled = empty;
     saveBtn.disabled = empty;
