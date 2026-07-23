@@ -16,21 +16,39 @@
     --background: oklch(0.985 0.006 110);
     --foreground: oklch(0.21 0.02 130);
     --card: oklch(1 0 0);
+    --card-glass: oklch(1 0 0 / 72%);
     --primary: oklch(0.78 0.18 60);
     --primary-foreground: oklch(0.28 0.07 55);
     --muted-foreground: oklch(0.5 0.02 125);
     --border: oklch(0.9 0.01 115);
     --ring: oklch(0.7 0.16 60);
+    --btn-glass: oklch(1 0 0 / 45%);
+    --btn-glass-hover: oklch(0.92 0.06 60 / 65%);
+    --sheen: oklch(1 0 0 / 60%);
+    --wave-alpha: 0.3;
+    --grad-front-top: oklch(0.88 0.16 70);
+    --grad-front-bottom: oklch(0.7 0.17 50);
+    --grad-back-top: oklch(0.78 0.15 55);
+    --grad-back-bottom: oklch(0.62 0.14 45);
   }
   .dark {
     --background: oklch(0.15 0.012 130);
     --foreground: oklch(0.94 0.01 110);
     --card: oklch(0.19 0.014 130);
+    --card-glass: oklch(0.19 0.014 130 / 78%);
     --primary: oklch(0.8 0.19 60);
     --primary-foreground: oklch(0.28 0.07 55);
     --muted-foreground: oklch(0.68 0.02 120);
     --border: oklch(1 0 0 / 10%);
     --ring: oklch(0.74 0.17 60);
+    --btn-glass: oklch(1 0 0 / 6%);
+    --btn-glass-hover: oklch(0.8 0.1 60 / 18%);
+    --sheen: oklch(1 0 0 / 12%);
+    --wave-alpha: 0.28;
+    --grad-front-top: oklch(0.85 0.19 60);
+    --grad-front-bottom: oklch(0.52 0.14 45);
+    --grad-back-top: oklch(0.7 0.16 55);
+    --grad-back-bottom: oklch(0.42 0.11 45);
   }
   * { box-sizing: border-box; margin: 0; }
   body {
@@ -41,6 +59,8 @@
     padding: 16px;
   }
   .wrap { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; position: relative; z-index: 1; }
+
+  /* ---- juice wave ---- */
   #wave {
     position: fixed;
     left: -10%;
@@ -68,32 +88,17 @@
     opacity: calc(var(--wave-alpha) * var(--wave-boost, 1));
     animation: drift 18s linear infinite;
   }
-  :root {
-    --wave-alpha: 0.3;
-    --grad-front-top: oklch(0.88 0.16 70);
-    --grad-front-bottom: oklch(0.7 0.17 50);
-    --grad-back-top: oklch(0.78 0.15 55);
-    --grad-back-bottom: oklch(0.62 0.14 45);
-  }
-  .dark {
-    --wave-alpha: 0.28;
-    --grad-front-top: oklch(0.85 0.19 60);
-    --grad-front-bottom: oklch(0.52 0.14 45);
-    --grad-back-top: oklch(0.7 0.16 55);
-    --grad-back-bottom: oklch(0.42 0.11 45);
-  }
   .grad-front-top { stop-color: var(--grad-front-top); }
   .grad-front-bottom { stop-color: var(--grad-front-bottom); }
   .grad-back-top { stop-color: var(--grad-back-top); }
   .grad-back-bottom { stop-color: var(--grad-back-bottom); }
   @keyframes drift { to { transform: translateX(-50%); } }
-  @media (prefers-reduced-motion: reduce) {
-    #wave { transition: none; }
-    #wave svg { animation: none; }
-    .logo .drip { animation: none !important; }
-  }
+
+  /* ---- header, logo, drip ---- */
   header { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
   h1 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; display: flex; align-items: center; gap: 10px; position: relative; z-index: 2; }
+  h1 .accent { color: var(--primary); }
+  .header-actions { display: flex; gap: 8px; }
   .logo { width: 26px; height: 26px; flex-shrink: 0; overflow: visible; }
   .logo .drip {
     opacity: 0;
@@ -109,19 +114,8 @@
     70% { transform: translateY(105px) scale(1); opacity: 1; }
     75%, 100% { transform: translateY(115px) scale(0.9); opacity: 0; }
   }
-  h1 .accent { color: var(--primary); }
-  :root {
-    --card-glass: oklch(1 0 0 / 72%);
-    --btn-glass: oklch(1 0 0 / 45%);
-    --btn-glass-hover: oklch(0.92 0.06 60 / 65%);
-    --sheen: oklch(1 0 0 / 60%);
-  }
-  .dark {
-    --card-glass: oklch(0.19 0.014 130 / 78%);
-    --btn-glass: oklch(1 0 0 / 6%);
-    --btn-glass-hover: oklch(0.8 0.1 60 / 18%);
-    --sheen: oklch(1 0 0 / 12%);
-  }
+
+  /* ---- cards (liquid glass) ---- */
   .card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -138,8 +132,10 @@
       -webkit-backdrop-filter: blur(12px);
     }
   }
+
+  /* ---- form fields ---- */
   label { font-size: 13px; font-weight: 500; color: var(--muted-foreground); display: block; margin-bottom: 6px; }
-  input[type="text"], input[type="number"] {
+  input[type="text"], input[type="number"], #urlOut {
     width: 100%;
     font: inherit;
     font-size: 16px;
@@ -151,109 +147,97 @@
     transition: border-color 0.25s ease;
   }
   input[type="text"]:hover, input[type="number"]:hover {
-    border-color: oklch(0.74 0.17 60 / 50%);
+    border-color: color-mix(in oklch, var(--ring) 50%, transparent);
   }
   input:focus-visible, button:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip {
+  #urlOut {
+    font-family: 'Geist Mono', monospace;
+    font-size: 13px;
+    word-break: break-all;
+    resize: none;
+  }
+  #customMinutesWrap { display: none; }
+  #customMinutesWrap.visible { display: block; }
+
+  /* ---- chips and buttons (shared interaction feel) ---- */
+  .chip, .btn, .btn-ghost {
     font: inherit;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
+  }
+  .chip:active, .btn:active, .btn-ghost:active { transform: translateY(1px); }
+  .chip {
     font-size: 14px;
     padding: 10px 14px;
     min-height: 44px;
-    border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--btn-glass);
     color: var(--foreground);
-    cursor: pointer;
     box-shadow: inset 0 1px 0 var(--sheen);
-    transition: background-color 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
   }
   .chip:not([aria-pressed="true"]):hover {
     background: var(--btn-glass-hover);
     border-color: var(--ring);
   }
-  .chip[aria-pressed="true"] {
-    background: var(--primary);
-    background-image: linear-gradient(oklch(1 0 0 / 30%), transparent 45%);
-    color: var(--primary-foreground);
-    border-color: transparent;
-    box-shadow: inset 0 1px 0 oklch(1 0 0 / 40%);
-  }
-  .chip:active { transform: translateY(1px); }
-  #customMinutesWrap { display: none; }
-  #customMinutesWrap.visible { display: block; }
-  .saved-row { display: none; flex-direction: column; gap: 8px; }
-  .saved-row.visible { display: flex; }
-  .saved-chip { display: inline-flex; align-items: center; gap: 8px; }
-  .saved-chip .x {
-    font: inherit;
-    border: none;
-    background: none;
-    color: var(--muted-foreground);
-    cursor: pointer;
-    padding: 4px;
-    line-height: 1;
-  }
-  .summary { font-size: 14px; color: var(--muted-foreground); min-height: 1.4em; }
-  #urlOut {
-    font-family: 'Geist Mono', monospace;
-    font-size: 13px;
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--background);
-    color: var(--foreground);
-    word-break: break-all;
-    resize: none;
-  }
-  .disabled-out #urlOut, .disabled-out .summary { opacity: 0.4; }
-  .actions { display: flex; gap: 10px; }
   .btn {
-    font: inherit;
     font-size: 15px;
     font-weight: 500;
     flex: 1;
     min-height: 44px;
     padding: 10px 16px;
-    border-radius: 8px;
-    cursor: pointer;
     border: none;
-    transition: background-color 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
   }
   .btn:hover { opacity: 0.8; }
-  .btn:active { transform: translateY(1px); }
   .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-primary {
+  .btn-primary, .chip[aria-pressed="true"] {
     background: var(--primary);
     color: var(--primary-foreground);
     background-image: linear-gradient(oklch(1 0 0 / 30%), transparent 45%);
     box-shadow: inset 0 1px 0 oklch(1 0 0 / 40%);
   }
+  .chip[aria-pressed="true"] { border-color: transparent; }
   .btn-secondary {
     background: var(--btn-glass);
     color: var(--foreground);
     border: 1px solid var(--border);
     box-shadow: inset 0 1px 0 var(--sheen);
   }
+  .btn-ghost {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    padding: 8px 12px;
+    min-height: 40px;
+  }
   .btn-secondary:hover, .btn-ghost:hover {
     opacity: 1;
     background: var(--btn-glass-hover);
     border-color: var(--ring);
   }
-  .btn-ghost {
+
+  /* ---- saved searches ---- */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .saved-row { display: none; flex-direction: column; gap: 8px; }
+  .saved-row.visible { display: flex; }
+  .saved-chip { display: inline-flex; align-items: center; gap: 8px; }
+  .saved-chip button {
     font: inherit;
+    border: none;
     background: none;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--foreground);
-    padding: 8px 12px;
-    min-height: 40px;
+    color: inherit;
     cursor: pointer;
-    transition: background-color 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
+    padding: 4px;
+    line-height: 1;
   }
-  .btn-ghost:active { transform: translateY(1px); }
-  .header-actions { display: flex; gap: 8px; }
+  .saved-chip .x { color: var(--muted-foreground); }
+
+  /* ---- output ---- */
+  .summary { font-size: 14px; color: var(--muted-foreground); min-height: 1.4em; }
+  .disabled-out #urlOut, .disabled-out .summary { opacity: 0.4; }
+  .actions { display: flex; gap: 10px; }
+
+  /* ---- help modal ---- */
   .modal-backdrop {
     display: none;
     position: fixed;
@@ -284,6 +268,11 @@
   .modal ul { padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
   @media (min-width: 520px) {
     .modal-backdrop { align-items: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #wave { transition: none; }
+    #wave svg { animation: none; }
+    .logo .drip { animation: none !important; }
   }
 </style>
 </head>
@@ -413,10 +402,80 @@
   var savedRow = $('savedRow'), savedChips = $('savedChips');
   var wtChips = $('wtChips'), openAllBtn = $('openAllBtn'), shareBtn = $('shareBtn');
   var wave = $('wave');
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var WT_NAMES = { '1': 'on-site', '2': 'remote', '3': 'hybrid' };
+  var DEFAULT_MINS = 30;
 
-  // ---- wave: level tracks freshness window (log scale, 15 min = full, 24 h = low) ----
+  // ---- shared helpers ----
+  function flash(btn, label, original) {
+    btn.textContent = label;
+    setTimeout(function () { btn.textContent = original; }, 1500);
+  }
+
+  function copyText(text, done, selectEl) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done);
+    } else if (selectEl) {
+      selectEl.select();
+      document.execCommand('copy');
+      done();
+    } else {
+      done();
+    }
+  }
+
+  // ---- search entry: the one canonical state shape ----
+  function currentEntry() {
+    return {
+      keywords: keywords.value.trim(),
+      location: location_.value.trim(),
+      window: windowChips.querySelector('[aria-pressed="true"]').dataset.seconds,
+      customMinutes: customMinutes.value,
+      wt: Array.prototype.map.call(
+        wtChips.querySelectorAll('[aria-pressed="true"]'),
+        function (c) { return c.dataset.wt; }
+      )
+    };
+  }
+
+  function clampMinutes(v) {
+    var mins = parseInt(v, 10);
+    return mins > 0 ? mins : DEFAULT_MINS;
+  }
+
+  function entrySeconds(s) {
+    if (s.window === 'custom') return clampMinutes(s.customMinutes) * 60;
+    return parseInt(s.window, 10);
+  }
+
+  function sameSearch(a, b) {
+    return a.keywords === b.keywords && a.location === b.location &&
+      a.window === b.window && (a.wt || []).join() === (b.wt || []).join();
+  }
+
+  function entryUrl(s) {
+    var url = 'https://www.linkedin.com/jobs/search/?keywords=' + encodeURIComponent(s.keywords);
+    if (s.location) url += '&location=' + encodeURIComponent(s.location);
+    url += '&f_TPR=r' + entrySeconds(s) + '&sortBy=DD';
+    if (s.wt && s.wt.length) url += '&f_WT=' + s.wt.join('%2C');
+    return url;
+  }
+
+  function windowLabel(s) {
+    if (s.window === 'custom') return 'past ' + clampMinutes(s.customMinutes) + ' min';
+    return 'past ' + windowChips.querySelector('[data-seconds="' + s.window + '"]').textContent.trim();
+  }
+
+  // ---- wave: level tracks freshness window (log scale, min chip = full, max chip = low) ----
+  var windowSeconds = Array.prototype.map.call(
+    windowChips.querySelectorAll('[data-seconds]'),
+    function (c) { return parseInt(c.dataset.seconds, 10); }
+  ).filter(function (n) { return !isNaN(n); });
+  var WAVE_MIN_S = Math.min.apply(null, windowSeconds);
+  var WAVE_MAX_S = Math.max.apply(null, windowSeconds);
+
   function setWaveLevel(seconds) {
-    var t = (Math.log(seconds) - Math.log(900)) / (Math.log(86400) - Math.log(900));
+    var t = (Math.log(seconds) - Math.log(WAVE_MIN_S)) / (Math.log(WAVE_MAX_S) - Math.log(WAVE_MIN_S));
     t = Math.min(1, Math.max(0, t));
     wave.style.setProperty('--wave-height', (72 - t * 32).toFixed(1) + 'vh');
     wave.style.setProperty('--wave-boost', (1.5 - t * 0.5).toFixed(2));
@@ -425,7 +484,9 @@
   // ---- wave: self-leveling tilt from device orientation ----
   var tiltTarget = 0, tiltCurrent = 0, tiltActive = false;
   function tiltLoop() {
-    tiltCurrent += (tiltTarget - tiltCurrent) * 0.08;
+    var diff = tiltTarget - tiltCurrent;
+    if (Math.abs(diff) < 0.01) { tiltActive = false; return; }
+    tiltCurrent += diff * 0.08;
     wave.style.setProperty('--wave-tilt', tiltCurrent.toFixed(2) + 'deg');
     requestAnimationFrame(tiltLoop);
   }
@@ -435,7 +496,7 @@
     if (!tiltActive) { tiltActive = true; tiltLoop(); }
   }
   function startTilt() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (reducedMotion) return;
     window.addEventListener('deviceorientation', onTilt);
   }
   var needsMotionPermission = typeof DeviceOrientationEvent !== 'undefined' &&
@@ -466,7 +527,7 @@
 
   // ---- logo drip: random 2-10s pause between drops ----
   var drip = document.querySelector('.logo .drip');
-  if (drip && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (drip && !reducedMotion) {
     var scheduleDrip = function () {
       setTimeout(function () { drip.classList.add('dripping'); }, 2000 + Math.random() * 8000);
     };
@@ -485,90 +546,31 @@
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
   });
 
-  // ---- state ----
-  function selectedSeconds() {
-    var active = windowChips.querySelector('[aria-pressed="true"]');
-    if (active.dataset.seconds === 'custom') {
-      var mins = parseInt(customMinutes.value, 10);
-      return (mins > 0 ? mins : 30) * 60;
-    }
-    return parseInt(active.dataset.seconds, 10);
-  }
-
-  function windowLabel() {
-    var active = windowChips.querySelector('[aria-pressed="true"]');
-    if (active.dataset.seconds === 'custom') {
-      var mins = parseInt(customMinutes.value, 10) || 30;
-      return 'past ' + mins + ' min';
-    }
-    return 'past ' + active.textContent.trim();
-  }
-
-  function selectedWT() {
-    return Array.prototype.map.call(
-      wtChips.querySelectorAll('[aria-pressed="true"]'),
-      function (c) { return c.dataset.wt; }
-    );
-  }
-
-  function entrySeconds(s) {
-    if (s.window === 'custom') {
-      var mins = parseInt(s.customMinutes, 10);
-      return (mins > 0 ? mins : 30) * 60;
-    }
-    return parseInt(s.window, 10);
-  }
-
-  function buildUrlFrom(s) {
-    var url = 'https://www.linkedin.com/jobs/search/?keywords=' + encodeURIComponent(s.keywords);
-    if (s.location) url += '&location=' + encodeURIComponent(s.location);
-    url += '&f_TPR=r' + s.seconds + '&sortBy=DD';
-    if (s.wt && s.wt.length) url += '&f_WT=' + s.wt.join('%2C');
-    return url;
-  }
-
-  function buildUrl() {
-    return buildUrlFrom({
-      keywords: keywords.value.trim(),
-      location: location_.value.trim(),
-      seconds: selectedSeconds(),
-      wt: selectedWT()
-    });
-  }
-
+  // ---- live update ----
   function update() {
-    var kw = keywords.value.trim(), loc = location_.value.trim();
-    var empty = !kw && !loc;
-    urlOut.value = buildUrl();
+    var entry = currentEntry();
+    var empty = !entry.keywords && !entry.location;
+    urlOut.value = entryUrl(entry);
     var parts = [];
-    if (kw) parts.push(kw);
-    if (loc) parts.push(loc);
-    parts.push(windowLabel());
-    var wtNames = { '1': 'on-site', '2': 'remote', '3': 'hybrid' };
-    var wt = selectedWT();
-    if (wt.length) parts.push(wt.map(function (w) { return wtNames[w]; }).join('/'));
+    if (entry.keywords) parts.push(entry.keywords);
+    if (entry.location) parts.push(entry.location);
+    parts.push(windowLabel(entry));
+    if (entry.wt.length) parts.push(entry.wt.map(function (w) { return WT_NAMES[w]; }).join('/'));
     parts.push('newest first');
     summary.textContent = empty ? 'Enter keywords or a location to start' : parts.join(' · ');
     outputCard.classList.toggle('disabled-out', empty);
-    setWaveLevel(selectedSeconds());
+    setWaveLevel(entrySeconds(entry));
     openBtn.disabled = empty;
     copyBtn.disabled = empty;
     saveBtn.disabled = empty;
-    localStorage.setItem('last', JSON.stringify({
-      keywords: kw, location: loc,
-      window: windowChips.querySelector('[aria-pressed="true"]').dataset.seconds,
-      customMinutes: customMinutes.value,
-      wt: selectedWT()
-    }));
+    localStorage.setItem('last', JSON.stringify(entry));
   }
 
   // ---- time window chips ----
   windowChips.addEventListener('click', function (e) {
     var chip = e.target.closest('.chip');
     if (!chip) return;
-    windowChips.querySelectorAll('.chip').forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
-    chip.setAttribute('aria-pressed', 'true');
-    customWrap.classList.toggle('visible', chip.dataset.seconds === 'custom');
+    setWindow(chip.dataset.seconds);
     update();
   });
 
@@ -592,17 +594,7 @@
   openBtn.addEventListener('click', function () { window.open(urlOut.value, '_blank'); });
 
   copyBtn.addEventListener('click', function () {
-    function done() {
-      copyBtn.textContent = 'Copied';
-      setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1500);
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(urlOut.value).then(done);
-    } else {
-      urlOut.select();
-      document.execCommand('copy');
-      done();
-    }
+    copyText(urlOut.value, function () { flash(copyBtn, 'Copied', 'Copy'); }, urlOut);
   });
 
   // ---- saved searches ----
@@ -612,18 +604,16 @@
   }
   function setSaved(list) {
     localStorage.setItem('savedSearches', JSON.stringify(list));
-    renderSaved();
+    renderSaved(list);
   }
-  function renderSaved() {
-    var list = getSaved();
+  function renderSaved(list) {
+    list = list || getSaved();
     savedRow.classList.toggle('visible', list.length > 0);
     savedChips.innerHTML = '';
     list.forEach(function (s, i) {
       var chip = document.createElement('span');
       chip.className = 'chip saved-chip';
       var label = document.createElement('button');
-      label.className = 'x';
-      label.style.color = 'inherit';
       label.textContent = s.keywords + (s.location ? ' · ' + s.location : '');
       label.addEventListener('click', function () { applySaved(s); });
       var del = document.createElement('button');
@@ -647,20 +637,10 @@
   }
   saveBtn.addEventListener('click', function () {
     var list = getSaved();
-    var entry = {
-      keywords: keywords.value.trim(),
-      location: location_.value.trim(),
-      window: windowChips.querySelector('[aria-pressed="true"]').dataset.seconds,
-      customMinutes: customMinutes.value,
-      wt: selectedWT()
-    };
-    var dup = list.some(function (s) {
-      return s.keywords === entry.keywords && s.location === entry.location &&
-        s.window === entry.window && (s.wt || []).join() === entry.wt.join();
-    });
+    var entry = currentEntry();
+    var dup = list.some(function (s) { return sameSearch(s, entry); });
     if (!dup) { list.push(entry); setSaved(list); }
-    saveBtn.textContent = dup ? 'Already saved' : 'Saved';
-    setTimeout(function () { saveBtn.textContent = 'Save this search'; }, 1500);
+    flash(saveBtn, dup ? 'Already saved' : 'Saved', 'Save this search');
   });
 
   function setWindow(win, mins) {
@@ -680,24 +660,13 @@
 
   // ---- open all saved searches ----
   openAllBtn.addEventListener('click', function () {
-    getSaved().forEach(function (s) {
-      window.open(buildUrlFrom({
-        keywords: s.keywords, location: s.location,
-        seconds: entrySeconds(s), wt: s.wt
-      }), '_blank');
-    });
+    getSaved().forEach(function (s) { window.open(entryUrl(s), '_blank'); });
   });
 
   // ---- share chips via link ----
   shareBtn.addEventListener('click', function () {
     var link = location.origin + location.pathname + '#import=' + encodeURIComponent(JSON.stringify(getSaved()));
-    function done() {
-      shareBtn.textContent = 'Link copied';
-      setTimeout(function () { shareBtn.textContent = 'Share chips'; }, 1500);
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(link).then(done);
-    } else { done(); }
+    copyText(link, function () { flash(shareBtn, 'Link copied', 'Share chips'); });
   });
 
   // ---- import chips from a share link ----
@@ -707,11 +676,7 @@
       var incoming = JSON.parse(decodeURIComponent(importMatch[1]));
       var current = getSaved();
       incoming.forEach(function (s) {
-        var dup = current.some(function (x) {
-          return x.keywords === s.keywords && x.location === s.location &&
-            x.window === s.window && (x.wt || []).join() === (s.wt || []).join();
-        });
-        if (!dup) current.push(s);
+        if (!current.some(function (x) { return sameSearch(x, s); })) current.push(s);
       });
       setSaved(current);
     } catch (e) { /* malformed link, ignore */ }
