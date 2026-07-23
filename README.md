@@ -13,7 +13,8 @@ Open `index.html` in a browser and try generating a link with different keywords
 None. No environment variables, no API keys, no backend. Everything happens client-side by building a URL string.
 
 ## Project structure
-- `index.html` — the tool itself (not built yet, see `docs/WORKLOG.md`)
+- `index.html` — the tool itself (all HTML/CSS/JS in one file)
+- `manifest.json` + `icon.svg` — lets the page install like an app from a phone browser ("Add to Home Screen")
 - `fresh-jobs-link-generator-spec.md` — full spec (inputs, URL format, deployment plan)
 - `BRANDING.md` — colors/fonts/style to match the related `fresh-jobs` GUI project
 - `how-to-find-guide.md` — background on why the `f_TPR` URL parameter works
