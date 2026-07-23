@@ -14,7 +14,7 @@ None. No environment variables, no API keys, no backend. Everything happens clie
 
 ## Project structure
 - `index.html` — the tool itself (all HTML/CSS/JS in one file)
-- `manifest.json` + `icon.svg` — lets the page install like an app from a phone browser ("Add to Home Screen")
+- `manifest.json` + `icon.svg` + `apple-touch-icon.png` — lets the page install like an app from a phone browser ("Add to Home Screen"); PNG variant needed because iOS Safari won't use SVG for the home-screen icon
 - `fresh-jobs-link-generator-spec.md` — full spec (inputs, URL format, deployment plan)
 - `BRANDING.md` — colors/fonts/style to match the related `fresh-jobs` GUI project
 - `how-to-find-guide.md` — background on why the `f_TPR` URL parameter works
