@@ -46,7 +46,7 @@
     left: -10%;
     bottom: 0;
     width: 120%;
-    height: var(--wave-height, 32vh);
+    height: var(--wave-height, 52vh);
     transform: rotate(var(--wave-tilt, 0deg));
     transform-origin: 50% 100%;
     transition: height 0.8s ease;
@@ -322,7 +322,7 @@
   function setWaveLevel(seconds) {
     var t = (Math.log(seconds) - Math.log(900)) / (Math.log(86400) - Math.log(900));
     t = Math.min(1, Math.max(0, t));
-    wave.style.setProperty('--wave-height', (45 - t * 27).toFixed(1) + 'vh');
+    wave.style.setProperty('--wave-height', (62 - t * 32).toFixed(1) + 'vh');
     wave.style.setProperty('--wave-boost', (1.5 - t * 0.5).toFixed(2));
   }
 
