@@ -59,17 +59,34 @@
     left: 0;
     width: 200%;
     height: 100%;
-    fill: var(--wave-color);
+  }
+  #wave .wave-back {
+    opacity: calc(var(--wave-alpha) * 0.65 * var(--wave-boost, 1));
+    animation: drift 27s linear infinite reverse;
+  }
+  #wave .wave-front {
     opacity: calc(var(--wave-alpha) * var(--wave-boost, 1));
     animation: drift 18s linear infinite;
   }
-  #wave svg + svg {
-    opacity: calc(var(--wave-alpha) * 0.7 * var(--wave-boost, 1));
-    animation-duration: 27s;
-    animation-direction: reverse;
+  .gloss { stroke: oklch(0.98 0.05 80 / 65%); stroke-width: 2.5; }
+  :root {
+    --wave-alpha: 0.3;
+    --grad-front-top: oklch(0.88 0.16 70);
+    --grad-front-bottom: oklch(0.7 0.17 50);
+    --grad-back-top: oklch(0.78 0.15 55);
+    --grad-back-bottom: oklch(0.62 0.14 45);
   }
-  :root { --wave-color: oklch(0.75 0.17 60); --wave-alpha: 0.22; }
-  .dark { --wave-color: oklch(0.76 0.19 55); --wave-alpha: 0.2; }
+  .dark {
+    --wave-alpha: 0.28;
+    --grad-front-top: oklch(0.85 0.19 60);
+    --grad-front-bottom: oklch(0.52 0.14 45);
+    --grad-back-top: oklch(0.7 0.16 55);
+    --grad-back-bottom: oklch(0.42 0.11 45);
+  }
+  .grad-front-top { stop-color: var(--grad-front-top); }
+  .grad-front-bottom { stop-color: var(--grad-front-bottom); }
+  .grad-back-top { stop-color: var(--grad-back-top); }
+  .grad-back-bottom { stop-color: var(--grad-back-bottom); }
   @keyframes drift { to { transform: translateX(-50%); } }
   @media (prefers-reduced-motion: reduce) {
     #wave { transition: none; }
@@ -273,8 +290,25 @@
 </head>
 <body>
 <div id="wave" aria-hidden="true">
-  <svg viewBox="0 0 1200 100" preserveAspectRatio="none"><path d="M0,50 C150,20 450,80 600,50 C750,20 1050,80 1200,50 L1200,100 L0,100 Z"/></svg>
-  <svg viewBox="0 0 1200 100" preserveAspectRatio="none"><path d="M0,60 C200,85 400,30 600,60 C800,85 1000,30 1200,60 L1200,100 L0,100 Z"/></svg>
+  <svg class="wave-back" viewBox="0 0 1200 100" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="juiceBack" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" class="grad-back-top"/>
+        <stop offset="1" class="grad-back-bottom"/>
+      </linearGradient>
+    </defs>
+    <path fill="url(#juiceBack)" d="M0,60 C200,85 400,30 600,60 C800,85 1000,30 1200,60 L1200,100 L0,100 Z"/>
+  </svg>
+  <svg class="wave-front" viewBox="0 0 1200 100" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="juiceFront" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" class="grad-front-top"/>
+        <stop offset="1" class="grad-front-bottom"/>
+      </linearGradient>
+    </defs>
+    <path fill="url(#juiceFront)" d="M0,50 C150,20 450,80 600,50 C750,20 1050,80 1200,50 L1200,100 L0,100 Z"/>
+    <path class="gloss" fill="none" vector-effect="non-scaling-stroke" d="M0,50 C150,20 450,80 600,50 C750,20 1050,80 1200,50"/>
+  </svg>
 </div>
 <div class="wrap">
   <header>
