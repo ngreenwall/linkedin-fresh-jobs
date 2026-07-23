@@ -139,13 +139,48 @@
     cursor: pointer;
   }
   .btn-ghost:active { transform: translateY(1px); }
+  .header-actions { display: flex; gap: 8px; }
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: oklch(0 0 0 / 55%);
+    align-items: flex-end;
+    justify-content: center;
+    padding: 16px;
+    z-index: 10;
+  }
+  .modal-backdrop.visible { display: flex; }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .modal h2 { font-size: 17px; font-weight: 600; }
+  .modal p, .modal li { font-size: 14px; line-height: 1.5; color: var(--muted-foreground); }
+  .modal strong { color: var(--foreground); font-weight: 500; }
+  .modal ul { padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
+  @media (min-width: 520px) {
+    .modal-backdrop { align-items: center; }
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1>Fresh <span class="accent">Jobs</span> Link</h1>
-    <button class="btn-ghost" id="themeToggle" aria-label="Toggle theme">◐</button>
+    <div class="header-actions">
+      <button class="btn-ghost" id="helpToggle" aria-label="How this works">?</button>
+      <button class="btn-ghost" id="themeToggle" aria-label="Toggle theme">◐</button>
+    </div>
   </header>
 
   <div class="card">
@@ -200,6 +235,21 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="helpBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <h2 id="helpTitle">How this works</h2>
+    <p>LinkedIn's default job search sorts by relevance, so fresh postings get buried under ones with 50+ applicants already. This tool builds a search link that sorts by newest first and filters to only recent posts, so you see jobs before the crowd does.</p>
+    <ul>
+      <li><strong>Posted within</strong> sets how recent a job must be (15 minutes to 24 hours, or a custom window).</li>
+      <li><strong>Workplace</strong> narrows to on-site, remote, or hybrid. Leave none selected to include all.</li>
+      <li><strong>Open</strong> jumps straight to the filtered LinkedIn search. <strong>Copy</strong> grabs the link to paste anywhere.</li>
+      <li><strong>Save this search</strong> keeps your keywords, location, and filters as a chip for one tap next time.</li>
+      <li><strong>Share chips</strong> copies a link containing your saved searches. Send it to someone and when they open it, those searches import into their saved list automatically.</li>
+    </ul>
+    <button class="btn btn-primary" id="helpClose">Got it</button>
+  </div>
+</div>
+
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -209,6 +259,21 @@
   var openBtn = $('openBtn'), copyBtn = $('copyBtn'), saveBtn = $('saveBtn');
   var savedRow = $('savedRow'), savedChips = $('savedChips');
   var wtChips = $('wtChips'), openAllBtn = $('openAllBtn'), shareBtn = $('shareBtn');
+
+  // ---- help modal ----
+  var helpBackdrop = $('helpBackdrop');
+  function openHelp() { helpBackdrop.classList.add('visible'); }
+  function closeHelp() { helpBackdrop.classList.remove('visible'); }
+  $('helpToggle').addEventListener('click', openHelp);
+  $('helpClose').addEventListener('click', closeHelp);
+  helpBackdrop.addEventListener('click', function (e) { if (e.target === helpBackdrop) closeHelp(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && helpBackdrop.classList.contains('visible')) closeHelp();
+  });
+  if (!localStorage.getItem('helpSeen')) {
+    openHelp();
+    localStorage.setItem('helpSeen', '1');
+  }
 
   // ---- theme ----
   var savedTheme = localStorage.getItem('theme') || 'dark';
