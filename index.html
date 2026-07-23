@@ -83,14 +83,15 @@
     opacity: 0;
     transform-box: fill-box;
     transform-origin: center;
-    animation: drip 7s ease-in infinite;
+    animation: drip 7s linear infinite;
   }
   @keyframes drip {
-    0%, 55% { transform: translateY(0) scale(0); opacity: 0; }
-    62% { transform: translateY(3px) scale(0.7); opacity: 1; }
-    72% { transform: translateY(6px) scale(1); opacity: 1; }
-    90% { transform: translateY(60px) scale(1); opacity: 1; }
-    97%, 100% { transform: translateY(75px) scale(0.7); opacity: 0; }
+    /* slow swell while attached, then a fast free-fall once it detaches */
+    0%, 50% { transform: translateY(0) scale(0); opacity: 0; }
+    58% { transform: translateY(1px) scale(0.5); opacity: 1; }
+    72% { transform: translateY(4px) scale(1); opacity: 1; }
+    82% { transform: translateY(85px) scale(1); opacity: 1; }
+    86%, 100% { transform: translateY(100px) scale(0.8); opacity: 0; }
   }
   h1 .accent { color: var(--primary); }
   :root {
@@ -275,7 +276,7 @@
           <line x1="50" y1="50" x2="26" y2="26"/>
         </g>
         <circle cx="50" cy="50" r="4" fill="oklch(0.96 0.02 80)"/>
-        <circle class="drip" cx="50" cy="98" r="7" fill="oklch(0.8 0.19 60)"/>
+        <path class="drip" d="M50,86 C56,95 61,100 61,106 A11,11 0 1 1 39,106 C39,100 44,95 50,86 Z" fill="oklch(0.8 0.19 60)"/>
       </svg>
       <span>Fresh <span class="accent">Jobs</span> Link</span>
     </h1>
