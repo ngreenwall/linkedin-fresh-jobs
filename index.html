@@ -243,6 +243,12 @@
     opacity: 0.6;
     padding: 8px 0 4px;
   }
+  footer a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  footer a:hover { opacity: 0.7; }
 
   /* ---- help modal ---- */
   .modal-backdrop {
@@ -383,7 +389,7 @@
     <button class="btn btn-secondary" id="saveBtn">Save this search</button>
   </div>
 
-  <footer>© <span id="year"></span> Nate Greenwall</footer>
+  <footer>© <span id="year"></span> <a href="https://www.linkedin.com/in/nate-greenwall/" target="_blank" rel="noopener">Nate Greenwall</a></footer>
 </div>
 
 <div class="modal-backdrop" id="helpBackdrop">
