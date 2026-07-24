@@ -135,6 +135,15 @@
 
   /* ---- form fields ---- */
   label { font-size: 13px; font-weight: 500; color: var(--muted-foreground); display: block; margin-bottom: 6px; }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--foreground);
+    opacity: 0.75;
+    margin: -4px 0 -4px;
+  }
   input[type="text"], input[type="number"], #urlOut {
     width: 100%;
     font: inherit;
@@ -339,6 +348,7 @@
   </header>
 
   <div class="card">
+    <p class="card-title">Search filters</p>
     <div>
       <label for="keywords">Keywords</label>
       <input type="text" id="keywords" placeholder="job title or keywords" autocomplete="off">
@@ -371,7 +381,7 @@
   </div>
 
   <div class="card saved-row" id="savedRow">
-    <label>Saved searches</label>
+    <p class="card-title">Saved searches</p>
     <div class="chips" id="savedChips"></div>
     <div class="actions">
       <button class="btn btn-secondary" id="openAllBtn">Open all</button>
@@ -380,6 +390,7 @@
   </div>
 
   <div class="card" id="outputCard">
+    <p class="card-title">Your link</p>
     <div class="summary" id="summary"></div>
     <textarea id="urlOut" rows="3" readonly aria-label="Generated URL"></textarea>
     <div class="actions">
