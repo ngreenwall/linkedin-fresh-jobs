@@ -236,6 +236,13 @@
   .summary { font-size: 14px; color: var(--muted-foreground); min-height: 1.4em; }
   .disabled-out #urlOut, .disabled-out .summary { opacity: 0.4; }
   .actions { display: flex; gap: 10px; }
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted-foreground);
+    opacity: 0.6;
+    padding: 8px 0 4px;
+  }
 
   /* ---- help modal ---- */
   .modal-backdrop {
@@ -375,6 +382,8 @@
     </div>
     <button class="btn btn-secondary" id="saveBtn">Save this search</button>
   </div>
+
+  <footer>© <span id="year"></span> Nate Greenwall</footer>
 </div>
 
 <div class="modal-backdrop" id="helpBackdrop">
@@ -696,6 +705,8 @@
 
   // desktop-only autofocus (mobile keyboard popping up unprompted is annoying)
   if (!('ontouchstart' in window)) keywords.focus();
+
+  $('year').textContent = new Date().getFullYear();
 
   renderSaved();
   update();
